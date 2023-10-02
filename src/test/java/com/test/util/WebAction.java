@@ -8,7 +8,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -26,15 +25,15 @@ public class WebAction {
 			//System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 			driver=new ChromeDriver();
 			driver.manage().window().maximize();
-			driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-			wait=new WebDriverWait(driver, 10);
+			driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+			wait=new WebDriverWait(driver, 5);
 		}
 		if(browser.equalsIgnoreCase("firefox"))
 		{
 			WebDriverManager.firefoxdriver().setup();
 			//System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 			driver=new FirefoxDriver();
-			driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 			wait=new WebDriverWait(driver, 10);
 		}
 		return driver;
@@ -85,7 +84,6 @@ public class WebAction {
 		}
 	}
 	
-	
 	public void printTextFromAll(String ...xpath)
 	{
 		List<WebElement> list=findAll(xpath);
@@ -96,5 +94,25 @@ public class WebAction {
 	public void close()
 	{
 		driver.close();
+	}
+	
+	public boolean isElementPresent(String...xpath)
+	{
+		WebElement element=null;
+		try {
+		String xp=xpath[0];
+		if(xpath.length==2)
+			xp=xp.replaceAll("##replaceString##", xpath[1]);
+		element=wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xp)));
+		}catch(Exception e) {}
+		if(element==null)
+			return false;
+		return element.isDisplayed();
+	}
+	
+	public String getText(String...xpath)
+	{
+		WebElement element=find(xpath);
+		return element.getText();
 	}
 }
